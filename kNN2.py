@@ -23,14 +23,20 @@ def file2matrix(filename):
     return mat, classLabelVector
 
 datingDataMat, datingLabels = file2matrix('./datingTestSet.txt')
-
 # 归一化处理
 def Norm(dataSet):
-    maxValue = dataSet.max(0)
-    minValue = dataSet.min(0)
-    print(maxValue, minValue)
+    maxVals = dataSet.max(0)
+    minVals = dataSet.min(0)
+    ranges = maxVals - minVals
+    normDataSet = numpy.zeros(numpy.shape(dataSet))
+    m = dataSet.shape[0]
+    normDataSet = dataSet - numpy.tile(minVals, (m, 1))
+    normDataSet = normDataSet/numpy.tile(ranges,(m,1))
+    return normDataSet, ranges, minVals
 
-Norm(datingDataMat)
+normDataSet, ranges, minVals = Norm(datingDataMat)
+
+print(normDataSet)
 
 # 分析数据：使用matplotlib创建散点图
 '''
