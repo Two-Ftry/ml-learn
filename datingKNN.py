@@ -3,9 +3,6 @@ import numpy
 import operator
 import sys
 
-import win_unicode_console
-win_unicode_console.enable()
-
 def classify0(inX, dataSet, labels, k):
     dataSetSize = dataSet.shape[0]
     diffMat = numpy.tile(inX, (dataSetSize, 1)) - dataSet
@@ -26,7 +23,8 @@ labelMap = {
     'didntLike': 1
 }
 def file2matrix(filename):
-    file = open(filename)
+    # file = open(filename)
+    file = getResourceAsStream(filename)
     lineList = file.readlines()
     file.close()
     numberOfLines = len(lineList)
@@ -41,7 +39,6 @@ def file2matrix(filename):
         index += 1
     return mat, classLabelVector
 
-# datingDataMat, datingLabels = file2matrix('./datingTestSet.txt')
 # 归一化处理
 def autoNorm(dataSet):
     maxVals = dataSet.max(0)
@@ -53,23 +50,9 @@ def autoNorm(dataSet):
     normDataSet = normDataSet/numpy.tile(ranges,(m,1))
     return normDataSet, ranges, minVals
 
-# normDataSet, ranges, minVals = autoNorm(datingDataMat)
-
-# print(normDataSet)
-
-# 分析数据：使用matplotlib创建散点图
-'''
-import matplotlib
-import matplotlib.pyplot as plt 
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax.scatter(datingDataMat[:,1], datingDataMat[:,2], 15.0 * numpy.array(datingLabels), 15.0 * numpy.array(datingLabels))
-plt.show()
-'''
-
 def datingClassTest():
     hoRatio = 0.10
-    datingDataMat, datingLabels = file2matrix('./datingTestSet.txt')
+    datingDataMat, datingLabels = file2matrix('/datingTestSet.txt')
     normMat, ranges, minVals = autoNorm(datingDataMat)
     m = normMat.shape[0]
     numTestVecs = int(m*hoRatio)
@@ -80,4 +63,9 @@ def datingClassTest():
         if (classifierResult != datingLabels[i]): errorCount += 1.0
     print('the total error rate is: {0}'.format(errorCount/float(numTestVecs)))
 
-datingClassTest()
+
+
+def main():
+    datingClassTest()
+
+main()
