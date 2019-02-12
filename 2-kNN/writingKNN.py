@@ -1,4 +1,6 @@
 import numpy
+import os
+import operator
 
 def classify0(inX, dataSet, labels, k):
     dataSetSize = dataSet.shape[0]
@@ -24,8 +26,41 @@ def img2vector(filename):
     file.close()
     return mat
 
-# def handleWriting():
-#     return
+def getLabelByFilename(filename):
+    if len(filename) == 0:
+        return ''
+    prefix = filename.split('.')[0]
+    label = prefix.split('_')[0]
+    return label
 
-mat = img2vector('./2-kNN/trainingDigits/0_0.txt')
-# print(mat[0,0:31])
+def handleWriting():
+    # 1 获取训练样本
+    trainingLables = []
+    pwd = os.getcwd()
+    trainingDirname = '/2-kNN/trainingDigits'
+    trainingFileList = os.listdir(pwd + trainingDirname)
+    m = len(trainingFileList)
+    trainingMats = numpy.zeros((m, 1024))
+    i = 0
+    for trainingFilename in trainingFileList:
+        label = getLabelByFilename(trainingFilename)
+        trainingLables.append(label)
+        trainingMats[i, :] = img2vector(pwd + trainingDirname + '/' + trainingFilename)
+        i = i + 1
+    # 2 测试
+    testDirname = '/2-kNN/testDigits'
+    testFileList = os.listdir(pwd + testDirname)
+    totalCount = len(testFileList)
+    errorCount = 0
+    for testFilename in testFileList:
+        realLabel = getLabelByFilename(testFilename)
+        testMat = img2vector(pwd + testDirname + '/' + testFilename)
+        testLabel = classify0(testMat, trainingMats, trainingLables, 3)
+        if testLabel != realLabel:
+            print('realLabel:%s testLabel:%s' % (realLabel, testLabel))
+            errorCount = errorCount + 1
+    print('total: %d, error: %d ' % (totalCount, errorCount))
+    print('the error rate is %f' % (errorCount/float(totalCount)))
+    return
+
+handleWriting()
